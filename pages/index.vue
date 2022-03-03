@@ -41,17 +41,17 @@ export default {
       return this.products;
     },
   },
-  methods: {
-    setSearchTerm({ term }) {
-      this.searchTerm = term;
-    },
-  },
   async created() {
     try {
       this.products = (await this.$axios.get('/api/products')).data.products;
     } catch (error) {
       this.errorMessage = 'Problemas ao carregar a lista!';
     }
+  },
+  methods: {
+    setSearchTerm({ term }) {
+      this.searchTerm = term;
+    },
   },
 };
 </script>
