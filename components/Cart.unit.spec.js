@@ -1,15 +1,9 @@
 import { mount } from '@vue/test-utils';
 import { makeServer } from '@/miragejs/server';
+import { CartManager } from '@/managers/CartManager';
 
 import Cart from '@/components/Cart';
 import CartItem from '@/components/CartItem';
-
-function mountCart({ props = {} } = {}) {
-  const wrapper = mount(Cart, {
-    propsData: props,
-  });
-  return { wrapper };
-}
 
 describe('Cart', () => {
   let server;
@@ -21,6 +15,18 @@ describe('Cart', () => {
   afterEach(() => {
     server.shutdown();
   });
+
+  function mountCart({ props = {} } = {}) {
+    const products = server.createList('product', 2);
+    const cartManager = new CartManager();
+    const wrapper = mount(Cart, {
+      propsData: { products, ...props },
+      mocks: {
+        $cart: cartManager,
+      },
+    });
+    return { wrapper, products, cartManager };
+  }
 
   it('should mount the component', () => {
     const { wrapper } = mountCart();
@@ -48,15 +54,31 @@ describe('Cart', () => {
   });
 
   it('should display "Cart is empty" when there are no products', () => {
-    const { wrapper } = mountCart({ props: { isOpen: true } });
+    const { wrapper } = mountCart({ props: { isOpen: true, products: [] } });
     expect(wrapper.text()).toContain('Cart is empty');
   });
 
   it('should display 2 instances of CartItem when 2 products are provided', () => {
-    const products = server.createList('product', 2);
-    const { wrapper } = mountCart({ props: { products } });
+    const { wrapper } = mountCart();
 
     expect(wrapper.findAllComponents(CartItem)).toHaveLength(2);
     expect(wrapper.text()).not.toContain('Cart is empty');
+  });
+
+  it('should display a button to clear cart', () => {
+    const { wrapper } = mountCart();
+    const button = wrapper.find('[data-testid="clear-cart-button"]');
+
+    expect(button.exists()).toBe(true);
+  });
+
+  it('should call cartManager.clearProducts() when button gets clicked', async () => {
+    const { wrapper, cartManager } = mountCart();
+    const spy = jest.spyOn(cartManager, 'clearProducts');
+    const button = wrapper.find('[data-testid="clear-cart-button"]');
+
+    await button.trigger('click');
+
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });
