@@ -121,4 +121,18 @@ describe('ProductList - integration', () => {
     expect(wrapper.vm.searchTerm).toEqual('');
     expect(cards).toHaveLength(11);
   });
+
+  it('should display total quantity of products', async () => {
+    const { wrapper } = await mountProductList({ quantity: 27 });
+    const label = wrapper.find('[data-testid="total-quantity-label"]');
+
+    expect(label.text()).toEqual('27 Products');
+  });
+
+  it('should display product (singular) when there is only one product', async () => {
+    const { wrapper } = await mountProductList({ quantity: 1 });
+    const label = wrapper.find('[data-testid="total-quantity-label"]');
+
+    expect(label.text()).toEqual('1 Product');
+  });
 });
