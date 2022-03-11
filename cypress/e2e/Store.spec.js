@@ -117,5 +117,30 @@ context('Store', () => {
 
       gId('cart-item').should('have.length', quantity);
     });
+
+    it('should remove a product from the cart', () => {
+      cy.addToCart({ index: 2 });
+      gId('cart-item').as('cartItems');
+      g('@cartItems').should('have.length', 1);
+      g('@cartItems').first().find('[data-testid="remove-button"]').click();
+      g('@cartItems').should('have.length', 0);
+    });
+
+    it('should display "Cart is empty" message when there are no products', () => {
+      gId('toggle-button').click();
+      gId('shopping-cart').contains('Cart is empty');
+    });
+
+    it('should clear cart when "Clear cart" button is clicked', () => {
+      cy.addToCart({ indexes: [1, 2, 3] });
+      gId('cart-item').should('have.length', 3);
+      gId('clear-cart-button').click();
+      gId('cart-item').should('have.length', 0);
+    });
+
+    it.only('should not display "Clear cart" button when cart is empty', () => {
+      gId('toggle-button').click();
+      gId('clear-cart-button').should('not.exist');
+    });
   });
 });
