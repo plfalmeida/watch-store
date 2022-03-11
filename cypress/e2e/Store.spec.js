@@ -69,7 +69,7 @@ context('Store', () => {
     });
   });
 
-  context.only('Store > Shopping Cart', () => {
+  context('Store > Shopping Cart', () => {
     const quantity = 10;
     beforeEach(() => {
       server.createList('product', quantity);
@@ -101,19 +101,19 @@ context('Store', () => {
     });
 
     it('should add 3 products to the cart', () => {
-      cy.addToCart([1, 3, 5]);
+      cy.addToCart({ indexes: [1, 3, 5] });
 
       gId('cart-item').should('have.length', 3);
     });
 
     it('should add 1 product to the cart', () => {
-      cy.addToCart(6);
+      cy.addToCart({ index: 6 });
 
       gId('cart-item').should('have.length', 1);
     });
 
     it('should add all products to the cart', () => {
-      cy.addToCart('all');
+      cy.addToCart({ indexes: 'all' });
 
       gId('cart-item').should('have.length', quantity);
     });

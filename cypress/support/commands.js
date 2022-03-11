@@ -34,11 +34,11 @@ Cypress.Commands.add('addToCart', (mode) => {
     cy.get('@productCards').eq(index).find('button').click({ force: true });
 
   const addByIndexes = () => {
-    mode.forEach(click);
+    mode.indexes.forEach(click);
   };
 
   const addByIndex = () => {
-    click(mode);
+    click(mode.index);
   };
 
   const addAll = () => {
@@ -51,17 +51,17 @@ Cypress.Commands.add('addToCart', (mode) => {
     });
   };
 
-  if (Array.isArray(mode)) {
+  if (!!mode.indexes && Array.isArray(mode.indexes)) {
     addByIndexes();
     return;
   }
 
-  if (typeof mode === 'number') {
+  if (mode.index) {
     addByIndex();
     return;
   }
 
-  if (typeof mode === 'string' && mode === 'all') {
+  if (mode.indexes && mode.indexes === 'all') {
     addAll();
     return;
   }
