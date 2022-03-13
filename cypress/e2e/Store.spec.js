@@ -118,6 +118,37 @@ context('Store', () => {
       gId('cart-item').should('have.length', quantity);
     });
 
+    it('should display quantity 1 when product is added to cart', () => {
+      cy.addToCart({ index: 1 });
+      gId('quantity').contains(1);
+    });
+
+    it('should increase quantity when button + gets clicked', () => {
+      cy.addToCart({ index: 1 });
+      gId('+').click();
+      gId('quantity').contains(2);
+      gId('+').click();
+      gId('quantity').contains(3);
+    });
+
+    it('should decrease quantity when button - gets clicked', () => {
+      cy.addToCart({ index: 1 });
+      gId('+').click();
+      gId('+').click();
+      gId('quantity').contains(3);
+      gId('-').click();
+      gId('quantity').contains(2);
+      gId('-').click();
+      gId('quantity').contains(1);
+    });
+
+    it('should not decrease below zero when button - gets clicked', () => {
+      cy.addToCart({ index: 1 });
+      gId('-').click();
+      gId('-').click();
+      gId('quantity').contains(0);
+    });
+
     it('should remove a product from the cart', () => {
       cy.addToCart({ index: 2 });
       gId('cart-item').as('cartItems');
@@ -138,7 +169,7 @@ context('Store', () => {
       gId('cart-item').should('have.length', 0);
     });
 
-    it.only('should not display "Clear cart" button when cart is empty', () => {
+    it('should not display "Clear cart" button when cart is empty', () => {
       gId('toggle-button').click();
       gId('clear-cart-button').should('not.exist');
     });
